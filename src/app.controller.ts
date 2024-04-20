@@ -37,7 +37,7 @@ export class AppController {
     }
 
 
-    const PATH = path.resolve(`./audio/${text.toLocaleLowerCase()}.mp3`);
+    const PATH = path.join('/tmp', `/audio/${text.toLocaleLowerCase()}.mp3`);
 
     if (fs.existsSync(PATH)) {
       return streamToBuffer(fs.createReadStream(PATH)).then((response) => {
