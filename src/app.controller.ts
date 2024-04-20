@@ -9,32 +9,25 @@ export class AppController {
 
 
   getLang = (text: string) => {
-    if (!text) {
-      return 'en'
-    }
     const regexKorean = /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
-    if (String(text).match(regexKorean)) return 'ko'
+    if (text.match(regexKorean)) return 'ko'
 
     if (
-      String(text)
+      text
         .split('')
         .filter(char => /\p{Script=Han}/u.test(char))
-        .join('') === String(text)
+        .join('') === text
     )
       return 'zh-CN'
 
     const regexJP = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/
-    if (regexJP.test(String(text))) return 'ja-JP'
+    if (regexJP.test(text)) return 'ja-JP'
 
     return 'en'
   }
 
-
-  @Get()
-  async getHello(@Query('text') text: string, @Res() res: Response) {
-    if (!text) return {
-      error: true,
-    }
+  @Get('/audio')
+  async getAudio(@Query('text') text: string, @Res() res: Response) {
     const streamToBuffer = async (readableStream: fs.ReadStream) => {
       const chunks = [];
       for await (const chunk of readableStream) {
@@ -51,5 +44,10 @@ export class AppController {
         fs.unlinkSync(PATH)
       })
     })
+  }
+
+  @Get()
+  getHello() {
+    return "Hello"
   }
 }

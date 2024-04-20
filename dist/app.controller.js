@@ -21,28 +21,21 @@ let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
         this.getLang = (text) => {
-            if (!text) {
-                return 'en';
-            }
             const regexKorean = /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g;
-            if (String(text).match(regexKorean))
+            if (text.match(regexKorean))
                 return 'ko';
-            if (String(text)
+            if (text
                 .split('')
                 .filter(char => /\p{Script=Han}/u.test(char))
-                .join('') === String(text))
+                .join('') === text)
                 return 'zh-CN';
             const regexJP = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/;
-            if (regexJP.test(String(text)))
+            if (regexJP.test(text))
                 return 'ja-JP';
             return 'en';
         };
     }
-    async getHello(text, res) {
-        if (!text)
-            return {
-                error: true,
-            };
+    async getAudio(text, res) {
         const streamToBuffer = async (readableStream) => {
             const chunks = [];
             for await (const chunk of readableStream) {
@@ -59,15 +52,24 @@ let AppController = class AppController {
             });
         });
     }
+    getHello() {
+        return "Hello";
+    }
 };
 exports.AppController = AppController;
 __decorate([
-    (0, common_1.Get)(),
+    (0, common_1.Get)('/audio'),
     __param(0, (0, common_1.Query)('text')),
     __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String, Object]),
     __metadata("design:returntype", Promise)
+], AppController.prototype, "getAudio", null);
+__decorate([
+    (0, common_1.Get)(),
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", []),
+    __metadata("design:returntype", void 0)
 ], AppController.prototype, "getHello", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
