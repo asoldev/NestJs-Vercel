@@ -14,28 +14,35 @@ var __param = (this && this.__param) || function (paramIndex, decorator) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
-const app_service_1 = require("./app.service");
-const path = require("path");
 const fs = require("fs");
+const path = require("path");
+const app_service_1 = require("./app.service");
 let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
-        this.getLang = (txt) => {
+        this.getLang = (text) => {
+            if (!text) {
+                return 'en';
+            }
             const regexKorean = /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g;
-            if (txt.match(regexKorean))
+            if (String(text).match(regexKorean))
                 return 'ko';
-            if (txt
+            if (String(text)
                 .split('')
                 .filter(char => /\p{Script=Han}/u.test(char))
-                .join('') === txt)
+                .join('') === String(text))
                 return 'zh-CN';
             const regexJP = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/;
-            if (regexJP.test(txt))
+            if (regexJP.test(String(text)))
                 return 'ja-JP';
             return 'en';
         };
     }
     async getHello(text, res) {
+        if (!text)
+            return {
+                error: true,
+            };
         const streamToBuffer = async (readableStream) => {
             const chunks = [];
             for await (const chunk of readableStream) {
