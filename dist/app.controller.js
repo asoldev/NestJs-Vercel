@@ -43,13 +43,7 @@ let AppController = class AppController {
             }
             return Buffer.concat(chunks);
         };
-        const PATH = path.join('/tmp', `/audio/${text.toLocaleLowerCase()}.mp3`);
-        if (fs.existsSync(PATH)) {
-            return streamToBuffer(fs.createReadStream(PATH)).then((response) => {
-                res.send(response);
-                fs.unlinkSync(PATH);
-            });
-        }
+        const PATH = path.join('var/task/tmp', `/audio/${text.toLocaleLowerCase()}.mp3`);
         fs.writeFileSync(PATH, '');
         const gtts = require('node-gtts')(this.getLang(text.toLocaleLowerCase()));
         return gtts.save(PATH, `${text}`, function () {
