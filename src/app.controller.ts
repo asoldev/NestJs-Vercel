@@ -9,6 +9,9 @@ export class AppController {
 
 
   getLang = (text: string) => {
+    if (!text) {
+      return 'en'
+    }
     const regexKorean = /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
     if (String(text).match(regexKorean)) return 'ko'
 
@@ -29,6 +32,7 @@ export class AppController {
 
   @Get()
   async getHello(@Query('text') text: string, @Res() res: Response) {
+    if (!text) return
     const streamToBuffer = async (readableStream: fs.ReadStream) => {
       const chunks = [];
       for await (const chunk of readableStream) {
