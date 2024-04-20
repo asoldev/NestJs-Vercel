@@ -43,9 +43,9 @@ let AppController = class AppController {
             }
             return Buffer.concat(chunks);
         };
-        const PATH = path.resolve(`./audio/${text.toLocaleLowerCase()}.mp3`);
+        const PATH = path.resolve(`./audio/${text}.mp3`);
         const gtts = require('node-gtts')(this.getLang(text));
-        return gtts.save(PATH, `${text.toLocaleLowerCase()}`, function () {
+        return gtts.save(PATH, `${text}`, function () {
             streamToBuffer(fs.createReadStream(PATH)).then((response) => {
                 res.send(response);
                 fs.unlinkSync(PATH);
