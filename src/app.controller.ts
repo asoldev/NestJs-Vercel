@@ -37,7 +37,7 @@ export class AppController {
     }
 
 
-    const PATH = path.join('var/task/tmp', `/audio/${text.toLocaleLowerCase()}.mp3`);
+    const PATH = path.join('/var/task/tmp', `/audio/${text.toLocaleLowerCase()}.mp3`);
 
     fs.writeFileSync(PATH, '')
     const gtts = require('node-gtts')(this.getLang(text.toLocaleLowerCase()));
