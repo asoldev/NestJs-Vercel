@@ -8,24 +8,59 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 var __metadata = (this && this.__metadata) || function (k, v) {
     if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
+var __param = (this && this.__param) || function (paramIndex, decorator) {
+    return function (target, key) { decorator(target, key, paramIndex); }
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.AppController = void 0;
 const common_1 = require("@nestjs/common");
 const app_service_1 = require("./app.service");
+const path = require("path");
+const fs = require("fs");
 let AppController = class AppController {
     constructor(appService) {
         this.appService = appService;
+        this.getLang = (txt) => {
+            const regexKorean = /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g;
+            if (txt.match(regexKorean))
+                return 'ko';
+            if (txt
+                .split('')
+                .filter(char => /\p{Script=Han}/u.test(char))
+                .join('') === txt)
+                return 'zh-CN';
+            const regexJP = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/;
+            if (regexJP.test(txt))
+                return 'ja-JP';
+            return 'en';
+        };
     }
-    getHello() {
-        return this.appService.getHello();
+    async getHello(text, res) {
+        const streamToBuffer = async (readableStream) => {
+            const chunks = [];
+            for await (const chunk of readableStream) {
+                chunks.push(chunk);
+            }
+            return Buffer.concat(chunks);
+        };
+        const PATH = path.resolve(`./audio/${text.toLocaleLowerCase()}.mp3`);
+        const gtts = require('node-gtts')(this.getLang(text));
+        return gtts.save(PATH, `${text.toLocaleLowerCase()}`, function () {
+            streamToBuffer(fs.createReadStream(PATH)).then((response) => {
+                res.send(response);
+                fs.unlinkSync(PATH);
+            });
+        });
     }
 };
 exports.AppController = AppController;
 __decorate([
     (0, common_1.Get)(),
+    __param(0, (0, common_1.Query)('text')),
+    __param(1, (0, common_1.Res)()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", []),
-    __metadata("design:returntype", String)
+    __metadata("design:paramtypes", [String, Object]),
+    __metadata("design:returntype", Promise)
 ], AppController.prototype, "getHello", null);
 exports.AppController = AppController = __decorate([
     (0, common_1.Controller)(),
