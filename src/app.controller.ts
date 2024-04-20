@@ -32,7 +32,9 @@ export class AppController {
 
   @Get()
   async getHello(@Query('text') text: string, @Res() res: Response) {
-    if (!text) return
+    if (!text) return {
+      error: true,
+    }
     const streamToBuffer = async (readableStream: fs.ReadStream) => {
       const chunks = [];
       for await (const chunk of readableStream) {
