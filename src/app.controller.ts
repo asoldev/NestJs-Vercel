@@ -1,27 +1,27 @@
-import { Controller, Get, Query, Res, StreamableFile } from '@nestjs/common';
-import { AppService } from './app.service';
-import * as path from 'path'
-import * as fs from 'fs';
+import { Controller, Get, Query, Res } from '@nestjs/common';
 import { Response } from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
+import { AppService } from './app.service';
 @Controller()
 export class AppController {
   constructor(private readonly appService: AppService) { }
 
 
-  getLang = (txt) => {
+  getLang = (text: string) => {
     const regexKorean = /[\uac00-\ud7af]|[\u1100-\u11ff]|[\u3130-\u318f]|[\ua960-\ua97f]|[\ud7b0-\ud7ff]/g
-    if (txt.match(regexKorean)) return 'ko'
+    if (String(text).match(regexKorean)) return 'ko'
 
     if (
-      txt
+      String(text)
         .split('')
         .filter(char => /\p{Script=Han}/u.test(char))
-        .join('') === txt
+        .join('') === String(text)
     )
       return 'zh-CN'
 
     const regexJP = /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FFF]/
-    if (regexJP.test(txt)) return 'ja-JP'
+    if (regexJP.test(String(text))) return 'ja-JP'
 
     return 'en'
   }
